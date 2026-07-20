@@ -3,6 +3,7 @@ package org.schabi.newpipe.extractor.services.youtube.extractors;
 import com.grack.nanojson.JsonObject;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.localization.DateWrapper;
+import org.schabi.newpipe.extractor.services.youtube.linkHandler.YoutubeStreamLinkHandlerFactory;
 import org.schabi.newpipe.extractor.stream.StreamInfoItemExtractor;
 import org.schabi.newpipe.extractor.stream.StreamType;
 import org.schabi.newpipe.extractor.utils.Utils;
@@ -21,8 +22,12 @@ public class YoutubeShortsInfoItemExtractor implements StreamInfoItemExtractor {
 
     @Override
     public String getUrl() throws ParsingException {
-        return "https://youtube.com" + item.getObject("onTap").getObject("innertubeCommand")
+        final String shortsUrl = "https://youtube.com"
+                + item.getObject("onTap").getObject("innertubeCommand")
                 .getObject("commandMetadata").getObject("webCommandMetadata").getString("url");
+        final YoutubeStreamLinkHandlerFactory linkHandler
+                = YoutubeStreamLinkHandlerFactory.getInstance();
+        return linkHandler.getUrl(linkHandler.getId(shortsUrl));
     }
 
     @Override
@@ -46,6 +51,11 @@ public class YoutubeShortsInfoItemExtractor implements StreamInfoItemExtractor {
     @Override
     public long getDuration() throws ParsingException {
         return 0;
+    }
+
+    @Override
+    public boolean isShortFormContent() {
+        return true;
     }
 
     @Override

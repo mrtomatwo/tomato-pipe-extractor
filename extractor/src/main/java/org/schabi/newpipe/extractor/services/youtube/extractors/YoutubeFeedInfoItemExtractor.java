@@ -3,6 +3,7 @@ package org.schabi.newpipe.extractor.services.youtube.extractors;
 import org.jsoup.nodes.Element;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.localization.DateWrapper;
+import org.schabi.newpipe.extractor.services.youtube.linkHandler.YoutubeStreamLinkHandlerFactory;
 import org.schabi.newpipe.extractor.stream.StreamInfoItemExtractor;
 import org.schabi.newpipe.extractor.stream.StreamType;
 
@@ -85,8 +86,11 @@ public class YoutubeFeedInfoItemExtractor implements StreamInfoItemExtractor {
     }
 
     @Override
-    public String getUrl() {
-        return entryElement.getElementsByTag("link").first().attr("href");
+    public String getUrl() throws ParsingException {
+        final String url = entryElement.getElementsByTag("link").first().attr("href");
+        final YoutubeStreamLinkHandlerFactory linkHandler
+                = YoutubeStreamLinkHandlerFactory.getInstance();
+        return linkHandler.getUrl(linkHandler.getId(url));
     }
 
     @Override
@@ -99,7 +103,7 @@ public class YoutubeFeedInfoItemExtractor implements StreamInfoItemExtractor {
     }
 
     @Override
-    public boolean isShortFormContent() throws ParsingException {
-        return getUrl().contains("shorts");
+    public boolean isShortFormContent() {
+        return entryElement.getElementsByTag("link").first().attr("href").contains("/shorts/");
     }
 }
